@@ -1,0 +1,25 @@
+#!/bin/bash
+make -f binom.mak
+make -f captcha.mak
+make -f elcgchi.mak
+make -f elcgdots.mak
+make -f elcgencr.mak
+make -f elcggen.mak
+make -f elcgnorm.mak
+make -f elcgpat.mak
+make -f elcgraw.mak
+make -f elcgtim.mak
+make -f genalfa.mak
+make -f gendna.mak
+make -f mcbell.mak
+make -f mccos.mak
+make -f mcparab.mak
+make -f mcpi.mak
+make -f mcsin.mak
+make -f mcsph.mak
+make -f pair.mak
+make -f poischi.mak
+make -f pwrball.mak
+make -f ranwlk.mak
+make -f tstelcg.mak
+make -f uintchi.mak

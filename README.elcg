@@ -1,0 +1,179 @@
+elcg is a random number generator (RNG) that produces 32-bit unsigned
+integers in a uniform distribution.  The underlying mathematics of elcg
+involves 48 bit integer arithmetic.  elcg is based on 1024 32-bit
+states.  elcg uses these 1024 states to perform a Bays-Durham shuffle.
+The 'e' in "elcg" means "extended LCG", because the period length
+of elcg is much longer than the original LCG algorithm (2^48).
+
+LCG stands for "linear congruential generator".  This is a class
+of random number generators based on the following formula:
+
+x = (a * x) + c   mod(m)
+
+Where a = 0x5deece66d
+      c = 11
+      m = 2^48
+
+The choice of constants in elcg is based on the rand48
+generator in GNU's glibc library.  See stdlib.h for more
+information about drand48 and lrand48.
+
+The prime factors of the constant a are:
+
+7, 443, 739, 11003
+
+The factors of the constant a-1 are:
+
+4, 3, 757, 787, 3527 
+
+The factors listed above indicate that the constant a
+in the elcg generator meet the necessary conditions of a
+linear congruent generator to achieve a period length of m.
+
+See T.E.HULL and A.R.Dobell, "Random Number Generators",
+SIAM Review, Vol. 4, Number 3, (July, 1962), pp. 230-254.
+
+The difference between this elcg generator and GNU's rand48
+generator is in the period length.  The Bays-Durham shuffle
+adds immensely to the period length.
+
+Period length of elcg.
+
+The period length of elcg is based on the random number generator
+state.  In the case of elcg, the random number generator state is
+three generations of output, plus an array of 1024 states used by
+the Bays-Durham shuffle, plus the original state used by the rand48
+algorithm.
+
+The period length is the number of generations it takes before
+every output of the random number generator is repeated in sequence
+for the same number of generations.
+
+Because of the Bays-Durham shuffle, the period length of elcg is
+theoretically 5.41e+2639, or the factorial of 1024.  The period
+length is so long that it can not be demonstrated on the strongest
+super-computer in existence today.
+
+One way to test the period length is to build a database, where the
+key is two successive generations of elcg output.  If there are no
+duplicate keys after hundreds of trillions of generations, then the
+period length is at least as long as the test.  If the test fails,
+then increase the size of the key to three successive generations
+of elcg output, and rerun the test.
+
+Test results.
+
+The elcg random number generator has tested successfully in the
+following tests.
+
+    dieharder -a
+    TestU01 Crush
+    National Institute of Standards and Technology STS test suite.
+
+The dieharder test yielded three weak p-values and no fails.
+Upon retesting, the three weak p-values did not appear in
+the same three tests, so weak results are subject to chance
+with the elcg generator.
+
+The TestU01 Crush test yielded no fails.
+
+Most of the STS tests are easy to pass, and so passing them does
+not validate a generator to any great degree.  Nevertheless,
+elcg passed the STS suite of tests, especially the harder tests.
+TestU01 incorporates the STS suite of tests into its own Crush
+suite.  Dieharder incorporates George Marsaglia's original diehard
+suite of tests.
+
+Benchmarking.
+
+The benchmarking program counts the number of ticks taken to call
+the random number generator one hundred million times.  elcg
+performs 10% slower than taus2 and as fast as the Mersenne Twister
+generator in the GNU Scientific Library (GSL).  In Monte
+Carlo tests, elcg performs 10% slower than taus2 and Mersenne
+Twister.  Bear in mind that taus2 and Mersenne Twister are ranked
+by GNU as the fastest generators in the GSL library.
+
+When testing elcg as input to dieharder -g 200, be cautioned
+that the raw input feature of dieharder slows down the test.
+It is better to integrate elcg into dieharder as an internal
+random number generator in the 600 series of generators.
+
+The same is true with TestU01.  It is better to integrate elcg
+as an internal random number generator in order to speed up the
+test.
+
+When fed as raw input to dieharder through a pipe, the elcg
+generator consumes about 20% of the CPU, while dieharder consumes
+about 70%.  This ratio depends on the dieharder test.  In other
+tests, elcg consumes roughly the same amount of CPU as dieharder.
+
+Initialization.
+
+Initialize the 1024 states in elcg to non-zero random or arbitrary
+values.  That amounts to initializing elcg to more than 4000 bytes
+of data.
+
+If you wish, you may override the initial values of the state array,
+so that you may conduct regression tests. You will also have to
+initialize the original elcg state (x), the two previous outputs,
+and the current output to arbitrary values.  elcgencr.c serves as
+an example of a program, where the initial state is overridden by
+a password.
+
+All of the elcg states are available to the programmer through a
+public structure.  See elcg.h for the structure.
+
+Distributed processing.
+
+elcg is conducive to running on a Beowulf style of supercomputer.
+Each of its 1024 states may be manipulated independently in separate
+nodes of the supercomputer.  The one bottle neck occurs during the
+Bays-Durham shuffle, when the state array is being changed.
+I see no reason why elcg could not keep pace with the fastest
+supercomputer in a scientific experiment.
+
+Supporting subroutines.
+
+The elcg generator has four subroutines that depend on it.
+The calling program is responsible for passing valid parameters.
+Each subroutine may be called billions of times in a scientific
+experiment.  Validation in the subroutine would be redundant
+in most cases.
+
+elcgunif.c produces a uniform random number from 0 - 1.  Its only
+parameter is the elcg structure.
+
+elcgint.c produces a uniform random integer from 0 up to a limit.
+It has two parameters, the elcg structure, and the limit.  The
+limit may be negative or positive.
+
+elcgpwr.c produces an unsigned integer of 1 to 32 bits.  It has
+two parameters, the elcg structure, and the number of bits.
+
+elcgbit.c produces an ASCII boolean integer (0 or 1).    Its only
+parameter is the elcg structure.
+
+Utilities.
+
+elcggen.c produces an ASCII stream of ones and zeros to stdout.
+
+elcgraw.c feeds random binary data into down stream programs,
+such as dieharder or TestU01 test programs..
+
+Porting to MinGW.
+
+The core elcg subroutines and generators are easy to port to MinGW
+on Windows 10.  elcginit.c has to be changed to accomodate date/time
+initialization.  The clock routine is not used in MinGW.  It is common
+practice to hash the date and time to produce a random initial state.
+
+elcggen and elcgraw have also been implemented successfully on Windows
+10 in NASM assembler, using GoLink as the linker.
+
+----------------------------------------------------------------
+
+Read INSTALL for installing elcg.
+Read TESTING for running tests in this repository.
+
+The website for elcg is at https://aquila62.github.io.
