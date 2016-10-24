@@ -39,9 +39,9 @@ typedef struct elcgstruct {
    unsigned long long m;        /* elcg constant m */
    /* output is the upper 32 bits of x */
    unsigned int out;            /* elcg 32 bit output */
-   unsigned int prev;           /* prev output state */
-   unsigned int pprev;          /* prev prev output state */
-   unsigned int *state;         /* state array of 1024 members */
+   unsigned long long prev;     /* prev output state */
+   unsigned long long pprev;    /* prev prev output state */
+   unsigned long long *state;   /* state array of 1024 members */
    } llfmt;
 
 #define LCGMASK (0xffffffffffffULL)

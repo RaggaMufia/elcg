@@ -33,8 +33,8 @@
 
 unsigned int elcg(llfmt *ll)
    {
-   unsigned int *p;          /* state array pointer */
-   unsigned int tmp;         /* used for Bays-Durham shuffle */
+   unsigned long long *p;      /* state array pointer */
+   unsigned long long tmp;     /* used for Bays-Durham shuffle */
    /**********************************************************/
    /* The offset into the state array is not related         */
    /* to the current state.                                  */
@@ -48,9 +48,7 @@ unsigned int elcg(llfmt *ll)
    /* calculate new current state                            */
    /* using the drand48 algorithm                            */
    /* The  macro is in elcg.h                                */
-   /* XOR the two previous outputs with the current output   */
    LCG;
-   ll->out = ((ll->x >> 16) ^ ll->prev ^ ll->pprev);
 
    /********************************************************/
    /* Bays-Durham shuffle of state array                   */
@@ -59,11 +57,14 @@ unsigned int elcg(llfmt *ll)
    /* and cannot be proven with empirical testing.         */
    /********************************************************/
    /* point to a state array element                       */
-   p     = (unsigned int *) ll->state + ll->ofst;
-   /* swap the current output with the member of the state array */
-   tmp     = *p;
-   *p      = ll->out;
-   ll->out = tmp;
+   p     = (unsigned long long *) ll->state + ll->ofst;
+   /* swap the current state with the member of the state array */
+   tmp   = *p;
+   *p    = ll->x;
+   ll->x = tmp;
    /*********************************************************/
+   /* XOR the two previous states with the current state    */
+   /*********************************************************/
+   ll->out = (unsigned int) ((ll->x ^ ll->prev ^ ll->pprev) >> 16);
    return(ll->out);
    } /* elcg subroutine */

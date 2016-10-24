@@ -22,9 +22,8 @@
 /* This initialization routine is based on date/time/ticks   */
 /* The caller is welcome to override the following:          */
 /* the state array                                           */
-/* the two previous outputs                                  */
-/* the current output                                        */
-/* the state (x) for the drand48 algorithm                   */
+/* the two previous states                                   */
+/* the current state (x)                                     */
 /*                                                           */
 /* The period length of elcg is estimated to be              */
 /* 5.41e+2639.                                               */
@@ -56,7 +55,7 @@ llfmt *elcginit(void)
    {
    int i;                      /* loop counter */
    int j;                      /* loop counter for crc */
-   unsigned int *stp,*stq;     /* pointer into state array */
+   unsigned long long *stp,*stq;    /* pointer into state array */
    unsigned char *p,*q;        /* pointer for crc stream */
    time_t now;                 /* current date and time */
    clock_t clk;                /* current number of ticks */
@@ -104,8 +103,8 @@ llfmt *elcginit(void)
    /***************************************************/
    /* allocate memory for elcg state array            */
    /***************************************************/
-   ll->state = (unsigned int *)
-      malloc(sizeof(unsigned int) * STATES);
+   ll->state = (unsigned long long *)
+      malloc(sizeof(unsigned long long) * STATES);
    if (ll->state == NULL)
       {
       fprintf(stderr,"elcginit: out of memory "
@@ -161,19 +160,19 @@ llfmt *elcginit(void)
    /* to random values                                */
    /***************************************************/
    LCG;
-   ll->pprev = (ll->x >> 16);   /* set to random UINT */
+   ll->pprev = ll->x;
    LCG;
-   ll->prev  = (ll->x >> 16);   /* set to random UINT */
+   ll->prev  = ll->x;
 
    /***************************************************/
    /* initialize the state array to random values     */
    /***************************************************/
-   stp = (unsigned int *) ll->state;
-   stq = (unsigned int *) ll->state + STATES;
+   stp = (unsigned long long *) ll->state;
+   stq = (unsigned long long *) ll->state + STATES;
    while (stp < stq)
       {
       LCG;
-      *stp++ = (ll->x >> 16);   /* set to random UINT */
+      *stp++ = ll->x;
       } /* for each member in ll->state array */
 
    /***************************************************/
