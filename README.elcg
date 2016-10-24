@@ -1,6 +1,6 @@
 elcg is a random number generator (RNG) that produces 32-bit unsigned
 integers in a uniform distribution.  The underlying mathematics of elcg
-involves 48 bit integer arithmetic.  elcg is based on 1024 32-bit
+involves 48 bit integer arithmetic.  elcg is based on 1024 64-bit
 states.  elcg uses these 1024 states to perform a Bays-Durham shuffle.
 The 'e' in "elcg" means "extended LCG", because the period length
 of elcg is much longer than the original LCG algorithm (2^48).
@@ -111,7 +111,7 @@ tests, elcg consumes roughly the same amount of CPU as dieharder.
 Initialization.
 
 Initialize the 1024 states in elcg to non-zero random or arbitrary
-values.  That amounts to initializing elcg to more than 4000 bytes
+values.  That amounts to initializing elcg to more than 8000 bytes
 of data.
 
 If you wish, you may override the initial values of the state array,
