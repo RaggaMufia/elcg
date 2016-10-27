@@ -5,6 +5,27 @@ the output from elcgraw into those test suites.
 
 ------------------------------------------------------
 
+Run qmatch to verify the period length of the elcg
+random number generator.  There is no parameter.
+
+./qmatch
+
+Press 'q' to quit.
+
+The output of qmatch is the number of random number generator
+cycles processed in billions of cycles, and the number of
+matches of the current list of outputs to the original list
+of outputs.  Each list of outputs, the original and the
+current list, are placed in separate FIFO queues of 1024
+outputs.  All 1024 outputs in each queue are compared until
+a mismatch occurs, and then the next cycle is processed.
+A match occurs when the elcg random number generator wraps
+around and repeats.  The period length of elcg is the
+factorial of 1024, or 5.41e+2639.  The two queues should
+never match during the remaining life of the Universe.
+
+------------------------------------------------------
+
 Test elcg by running tstelcg.  There are no parameters.
 
 ./tstelcg
