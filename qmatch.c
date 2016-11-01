@@ -1,4 +1,4 @@
-/* qmatch.c - FIFO Queue Match for erand  Version 1.0.0               */
+/* qmatch.c - FIFO Queue Match for elcg  Version 1.0.0               */
 /* Copyright (C) 2016 aquila62 at github.com                         */
 
 /* This program is free software; you can redistribute it and/or     */
@@ -40,7 +40,7 @@
 #include <time.h>
 #include <sys/times.h>
 #include <curses.h>
-#include "erand.h"
+#include "elcg.h"
 
 #define STATES (1024)
 
@@ -109,7 +109,7 @@ void enque(qfmt *tail, unsigned int outpt)
    tail->next = newnode;
    newnode->next->prev = newnode;
    newnode->prev = tail;
-   /* The outpt parameter is the output of an erand random number */
+   /* The outpt parameter is the output of an elcg random number */
    /* generator cycle */
    newnode->outpt = outpt;
    } /* enque */
@@ -177,9 +177,9 @@ int main()
    qfmt *tail;                 /* tail of current queue */
    qfmt *currnode;             /* outpt in current  queue */
    qfmt *orignode;             /* outpt in original queue */
-   unsigned int outpt;         /* 32-bit output from an erand cycle */
-   erfmt *er;                  /* erand structure */
-   er = (erfmt *) erandinit();  /* initialize the erand structure */
+   unsigned int outpt;         /* 32-bit output from an elcg cycle */
+   llfmt *ll;                  /* elcg structure */
+   ll = (llfmt *) elcginit();  /* initialize the elcg structure */
 
    /*************************************************************/
    /* initialize the heads and tails for the two FIFO queues    */
@@ -205,7 +205,7 @@ int main()
    i = STATES;
    while(i--)
       {
-      outpt = erand(er);
+      outpt = elcg(ll);
       enque(origtail,outpt);
       enque(tail,outpt);
       } /* for each state in original queue */
@@ -226,7 +226,7 @@ int main()
       unsigned int outpt;
       cycle += 1.0;
       i++;
-      outpt = erand(er);
+      outpt = elcg(ll);
       /******************************************************/
       /* Compare the current FIFO queue to the original     */
       /* FIFO queue.                                        */
@@ -259,7 +259,7 @@ int main()
          {
 	 char str[128];
          move(5,24);
-         sprintf(str,"erand with Bays-Durham Shuffle");
+         sprintf(str,"elcg with Bays-Durham Shuffle");
          addstr(str);
 	 move(10,27);
 	 sprintf(str,"%9.2f Billion", cycle / BILLION);
@@ -284,7 +284,7 @@ int main()
       } /* if mis-match */
    rmque(tail,head);
    rmque(origtail,orighead);
-   free(er->state);
-   free(er);
+   free(ll->state);
+   free(ll);
    return(0);
    } /* main */
