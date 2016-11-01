@@ -160,7 +160,7 @@ speed of elcg.  n = 1 million.  Expected error is 1/1000.
 Test a simple Markov Chain by running mchain.
 
 This program uses new curses.
-See installation of new curses below under eeglpat.
+See installation of new curses below under elcgpat.
 
 There are no parameters.
 
